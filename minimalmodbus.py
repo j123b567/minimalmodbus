@@ -785,7 +785,7 @@ class Instrument:
         Args:
             * registeraddress (int): The slave register start address  (use decimal
               numbers, not hex).
-            * textstring (str): The string to store in the slave, must be ASCII.
+            * textstring (bytes): The string to store in the slave, must be ASCII.
             * number_of_registers (int): The number of registers allocated for the string.
 
         .. note:: The parameter number_of_registers was named numberOfRegisters
@@ -1218,7 +1218,7 @@ class Instrument:
         Args:
             * functioncode (int): The function code for the command to be performed.
               Can for example be 'Write register' = 16.
-            * payload_to_slave (str): Data to be transmitted to the slave (will be
+            * payload_to_slave (bytes): Data to be transmitted to the slave (will be
               embedded in slaveaddress, CRC etc)
 
         Returns:
@@ -1274,7 +1274,7 @@ class Instrument:
         """Talk to the slave via a serial port.
 
         Args:
-            request (str): The raw request that is to be sent to the slave.
+            request (bytes): The raw request that is to be sent to the slave.
             number_of_bytes_to_read (int): number of bytes to read
 
         Returns:
@@ -1628,7 +1628,7 @@ def _embed_payload(slaveaddress, mode, functioncode, payloaddata):
         * mode (str): The modbus protcol mode (MODE_RTU or MODE_ASCII)
         * functioncode (int): The function code for the command to be performed.
           Can for example be 16 (Write register).
-        * payloaddata (str): The byte string to be sent to the slave.
+        * payloaddata (bytes): The byte string to be sent to the slave.
 
     Returns:
         The built (raw) request string for sending to the slave (including CRC etc).
@@ -1674,7 +1674,7 @@ def _extract_payload(response, slaveaddress, mode, functioncode):
     """Extract the payload data part from the slave's response.
 
     Args:
-        * response (str): The raw response byte string from the slave.
+        * response (bytes): The raw response byte string from the slave.
           This is different for RTU and ASCII.
         * slaveaddress (int): The adress of the slave. Used here for error checking only.
         * mode (str): The modbus protcol mode (MODE_RTU or MODE_ASCII)
@@ -1831,7 +1831,7 @@ def _predict_response_size(mode, functioncode, payload_to_slave):
     Args:
      * mode (str): The modbus protcol mode (MODE_RTU or MODE_ASCII)
      * functioncode (int): Modbus function code.
-     * payload_to_slave (str): The raw request that is to be sent to the slave
+     * payload_to_slave (bytes): The raw request that is to be sent to the slave
        (not hex encoded string)
 
     Returns:
@@ -2028,7 +2028,7 @@ def _twobyte_string_to_num(bytestring, number_of_decimals=0, signed=False):
     r"""Convert a two-byte string to a numerical value, possibly scaling it.
 
     Args:
-        * bytestring (str): A string of length 2.
+        * bytestring (bytes): A string of length 2.
         * number_of_decimals (int): The number of decimals. Defaults to 0.
         * signed (bol): Whether large positive values should be interpreted as
           negative values.
@@ -2134,7 +2134,7 @@ def _bytestring_to_long(
     in the slave.
 
     Args:
-        * bytestring (str): A string of length 4.
+        * bytestring (bytes): A string of length 4.
         * signed (bol): Whether large positive values should be interpreted as
           negative values.
         * number_of_registers (int): Should be 2. For error checking only.
@@ -2240,7 +2240,7 @@ def _bytestring_to_float(bytestring, number_of_registers=2, byteorder=BYTEORDER_
     and on alternative names, see :func:`minimalmodbus._float_to_bytestring`.
 
     Args:
-        * bytestring (str): A string of length 4 or 8.
+        * bytestring (bytes): A string of length 4 or 8.
         * number_of_registers (int): Can be 2 or 4.
         * byteorder (int): How multi-register data should be interpreted.
 
@@ -2333,11 +2333,11 @@ def _bytestring_to_textstring(bytestring, number_of_registers=16):
     Not much of conversion is done, mostly error checking.
 
     Args:
-        * bytestring (str): The string from the slave. Length = 2*number_of_registers
+        * bytestring (bytes): The string from the slave. Length = 2*number_of_registers
         * number_of_registers (int): The number of registers allocated for the string.
 
     Returns:
-        A the text string (str).
+        A the text string (bytes).
 
     Raises:
         TypeError, ValueError
@@ -2417,7 +2417,7 @@ def _bytestring_to_valuelist(bytestring, number_of_registers):
     The bytestring is interpreted as 'unsigned INT16'.
 
     Args:
-        * bytestring (str): The string from the slave. Length = 2*number_of_registers
+        * bytestring (bytes): The string from the slave. Length = 2*number_of_registers
         * number_of_registers (int): The number of registers. For error checking.
 
     Returns:
@@ -2459,12 +2459,12 @@ def _pack(formatstring, value):
     Uses the built-in :mod:`struct` Python module.
 
     Args:
-        * formatstring (str): String for the packing. See the :mod:`struct` module
+        * formatstring (bytes): String for the packing. See the :mod:`struct` module
           for details.
         * value (depends on formatstring): The value to be packed
 
     Returns:
-        A bytestring (str).
+        A bytestring (bytes).
 
     Raises:
         ValueError
@@ -2493,7 +2493,7 @@ def _unpack(formatstring, packed):
     Uses the built-in :mod:`struct` Python module.
 
     Args:
-        * formatstring (str): String for the packing. See the :mod:`struct` module
+        * formatstring (bytes): String for the packing. See the :mod:`struct` module
           for details.
         * packed (bytes): The bytestring to be unpacked.
 
@@ -2613,7 +2613,7 @@ def _calculate_number_of_bytes_for_bits(number_of_bits):
     """Calculate number of full bytes required to house a number of bits.
 
     Args:
-        * number_of_bits (str): Number of bits
+        * number_of_bits (bytes): Number of bits
 
     Error checking should have been done before.
 
