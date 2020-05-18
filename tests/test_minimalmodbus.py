@@ -2708,26 +2708,26 @@ class TestDummyCommunication(ExtendedTestCase):
     ## Perform command ##
 
     def testPerformcommandKnownResponse(self):
-        self.assertEqual( self.instrument._perform_command(16, b'TESTCOMMAND'), b'TRsp') # Total response length should be 8 bytes
-        self.assertEqual( self.instrument._perform_command(75, b'TESTCOMMAND2'), b'TESTCOMMANDRESPONSE2')
-        self.assertEqual( self.instrument._perform_command(2, b'\x00\x3d\x00\x01'), b'\x01\x01' ) # Read bit register 61 on slave 1 using function code 2.
+        self.assertEqual(self.instrument._perform_command_bytes(16, b'TESTCOMMAND'), b'TRsp') # Total response length should be 8 bytes
+        self.assertEqual(self.instrument._perform_command_bytes(75, b'TESTCOMMAND2'), b'TESTCOMMANDRESPONSE2')
+        self.assertEqual(self.instrument._perform_command_bytes(2, b'\x00\x3d\x00\x01'), b'\x01\x01') # Read bit register 61 on slave 1 using function code 2.
 
     def testPerformcommandWrongSlaveResponse(self):
-        self.assertRaises(InvalidResponseError, self.instrument._perform_command, 1,  b'TESTCOMMAND') # Wrong slave address in response
-        self.assertRaises(InvalidResponseError, self.instrument._perform_command, 2,  b'TESTCOMMAND') # Wrong function code in response
-        self.assertRaises(InvalidResponseError, self.instrument._perform_command, 3,  b'TESTCOMMAND') # Wrong crc in response
-        self.assertRaises(InvalidResponseError, self.instrument._perform_command, 4,  b'TESTCOMMAND') # Too short response message from slave
-        self.assertRaises(InvalidResponseError, self.instrument._perform_command, 5,  b'TESTCOMMAND') # Error indication from slave
+        self.assertRaises(InvalidResponseError, self.instrument._perform_command_bytes, 1, b'TESTCOMMAND') # Wrong slave address in response
+        self.assertRaises(InvalidResponseError, self.instrument._perform_command_bytes, 2, b'TESTCOMMAND') # Wrong function code in response
+        self.assertRaises(InvalidResponseError, self.instrument._perform_command_bytes, 3, b'TESTCOMMAND') # Wrong crc in response
+        self.assertRaises(InvalidResponseError, self.instrument._perform_command_bytes, 4, b'TESTCOMMAND') # Too short response message from slave
+        self.assertRaises(InvalidResponseError, self.instrument._perform_command_bytes, 5, b'TESTCOMMAND') # Error indication from slave
 
     def testPerformcommandWrongInputValue(self):
-        self.assertRaises(ValueError, self.instrument._perform_command, -1,  b'TESTCOMMAND') # Wrong function code
-        self.assertRaises(ValueError, self.instrument._perform_command, 128, b'TESTCOMMAND')
+        self.assertRaises(ValueError, self.instrument._perform_command_bytes, -1, b'TESTCOMMAND') # Wrong function code
+        self.assertRaises(ValueError, self.instrument._perform_command_bytes, 128, b'TESTCOMMAND')
 
     def testPerformcommandWrongInputType(self):
         for value in _NOT_INTERGERS:
-            self.assertRaises(TypeError, self.instrument._perform_command, value, b'TESTCOMMAND')
+            self.assertRaises(TypeError, self.instrument._perform_command_bytes, value, b'TESTCOMMAND')
         for value in _NOT_STRINGS:
-            self.assertRaises(TypeError, self.instrument._perform_command, 16,     value)
+            self.assertRaises(TypeError, self.instrument._perform_command_bytes, 16, value)
 
 
     ## Communicate ##
@@ -2878,7 +2878,7 @@ class TestDummyCommunicationDTB4824_RTU(ExtendedTestCase):
         self.instrument.write_bit(0x0814, 1) # RUN
 
     def testReadBits(self):
-        self.assertEqual(self.instrument._perform_command(2, b'\x08\x10\x00\x09'),
+        self.assertEqual(self.instrument._perform_command_bytes(2, b'\x08\x10\x00\x09'),
                          b'\x02\x07\x00')
 
     def testReadRegister(self):
@@ -2930,7 +2930,7 @@ class TestDummyCommunicationDTB4824_ASCII(ExtendedTestCase):
         self.instrument.write_bit(0x0814, 1) # RUN
 
     def testReadBits(self):
-        self.assertEqual( self.instrument._perform_command(2, b'\x08\x10\x00\x09'), b'\x02\x17\x00')
+        self.assertEqual(self.instrument._perform_command_bytes(2, b'\x08\x10\x00\x09'), b'\x02\x17\x00')
 
     def testReadRegister(self):
         self.assertEqual( self.instrument.read_register(0x1000), 64990) # Process value (PV)

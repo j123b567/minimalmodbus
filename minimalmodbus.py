@@ -1192,7 +1192,7 @@ class Instrument:
         )
 
         # Communicate with instrument
-        payload_from_slave = self._perform_command(functioncode, payload_to_slave)
+        payload_from_slave = self._perform_command_bytes(functioncode, payload_to_slave)
 
         # Parse response payload
         return _parse_payload(
@@ -1212,7 +1212,7 @@ class Instrument:
     # Communication implementation details #
     # #################################### #
 
-    def _perform_command(self, functioncode, payload_to_slave):
+    def _perform_command_bytes(self, functioncode, payload_to_slave):
         """Perform the command having the *functioncode*.
 
         Args:
@@ -1422,6 +1422,21 @@ class Instrument:
             raise NoResponseError("No communication with the instrument (no answer)")
 
         return answer
+
+    def _perform_command(self, functioncode, payload_to_slave):
+        """Perform the command having the *functioncode*.
+
+        Just for backward compatibility, use _perform_command_bytes
+        """
+        if sys.version_info[0] > 2:
+            return str(
+                self._perform_command_bytes(
+                    functioncode,
+                    bytes(payload_to_slave, encoding="latin1")),
+                encoding="latin1"
+            )
+        else:
+            return self._perform_command_bytes(functioncode, payload_to_slave)
 
     # For backward compatibility
     _performCommand = _perform_command
