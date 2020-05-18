@@ -51,10 +51,10 @@ from the dummy serial port.
 Intended to be monkey-patched in the calling test module.
 
 """
-RESPONSES["EXAMPLEREQUEST"] = "EXAMPLERESPONSE"
+RESPONSES[b"EXAMPLEREQUEST"] = b"EXAMPLERESPONSE"
 
 
-DEFAULT_RESPONSE = "NotFoundInResponseDictionary"
+DEFAULT_RESPONSE = b"NotFoundInResponseDictionary"
 """Response when no matching message (key) is found in the look-up dictionary.
 
 Should not be an empty string, as that is interpreted as "no data available on port".
@@ -163,9 +163,8 @@ class Serial:
                 raise TypeError(
                     "The input must be type bytes. Given:" + repr(inputdata)
                 )
-            inputstring = str(inputdata, encoding="latin1")
-        else:
-            inputstring = inputdata
+
+        inputstring = inputdata
 
         if not self._isOpen:
             raise IOError(
@@ -250,10 +249,7 @@ class Serial:
                 )
             )
 
-        if sys.version_info[0] > 2:  # Convert types to make it python3 compatible
-            return bytes(returnstring, encoding="latin1")
-        else:
-            return returnstring
+        return returnstring
 
 
 def _print_out(inputstring):
